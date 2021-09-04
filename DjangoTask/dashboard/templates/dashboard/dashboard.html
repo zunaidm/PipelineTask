@@ -1,0 +1,102 @@
+{% extends 'dashboard/main.html' %}
+{% load static %}
+{% block content %}
+
+<div class="card card-body">
+	<h5>Dashboard</h5>
+</div>
+
+<br>
+<div class="row">
+	<div class="col-md-6">
+		<div class="card card-body">
+            <div id="timeline-chart"></div>
+		</div>
+	</div>
+
+	<div class="col-md-6">
+		<div class="card card-body">
+         <div id="pie-chart"></div>
+		</div>
+	</div>
+</div>
+
+<br>
+
+<div class="row">
+			<div class="col-md">
+				<div class="card card-body">
+					<h5>Latest 10 Log</h5>
+				</div>
+				<div class="card card-body">
+					<table class="table">
+						<tr>
+							<th>Date</th>
+							<th>Category</th>
+							<th>Message</th>
+						</tr>
+
+						{% for log in last_ten_log %}
+						<tr>
+							<td>{{log.date_time}}</td>
+							<td>{{log.category}}</td>
+							<td>{{log.message}}</td>
+						</tr>
+						{% endfor %}
+						
+					</table>
+				</div>
+			</div>
+			
+		</div>
+
+    <script src="https://code.highcharts.com/highcharts.src.js"></script>
+    <script>
+    Highcharts.chart('timeline-chart', {
+        chart: {
+            
+        },
+        title: {
+            text: 'Timeline Chart'
+        },
+        xAxis: {
+            categories: [
+                {% for dt in date_count_list %}
+                    "{{dt.0}}",
+                {% endfor %}
+            ]
+        },
+        yAxis: {
+            title: {
+                text: 'Total Count'
+            }
+        },
+        series: [{
+            name: 'Logs',
+            data: [
+                {% for dc in date_count_list %}
+                    {{dc.1}},
+                {% endfor %}
+            ]
+        }]
+    });
+
+    Highcharts.chart('pie-chart', {
+        title: {
+            text: 'Pie Chart'
+        },
+        series: [{
+            type: 'pie',
+            name: 'Category wise count',
+            data: [
+                {% for ct in category_wise_count %}
+                ["{{ct.category}}", {{ct.category__count}}],
+                {% endfor %}
+            ]
+        }]
+    });
+
+  </script>
+
+
+{% endblock %}
